@@ -193,3 +193,15 @@ func TestDomainGrant(t *testing.T) {
 		t.Errorf("named: %q %v %v", p, present, err)
 	}
 }
+
+// TestParseDomainGrantNamesAnEscape: an escape is refused as one, not as
+// the invalid character ValidatePattern would also find, so the log says
+// what the issuer did.
+func TestParseDomainGrantNamesAnEscape(t *testing.T) {
+	for _, in := range []string{"[\"a\\u002eexample.org\"]", `["a\\.example.org"]`} {
+		_, err := ParseDomainGrant(in)
+		if err == nil || !strings.Contains(err.Error(), "JSON escape") {
+			t.Errorf("ParseDomainGrant(%s): %v, want a JSON escape refusal", in, err)
+		}
+	}
+}
