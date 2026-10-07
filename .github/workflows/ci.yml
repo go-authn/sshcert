@@ -57,9 +57,9 @@ jobs:
     env:
       SSHCERT_REQUIRE_SSHD: "1"
       SSHCERT_REQUIRE_GEANT: "1"
-      SSHCERT_GEANT_JUDGE: /usr/local/bin/sshcert-geant-judge
-      SSHCERT_GEANT_AUTHORIZE: /usr/local/bin/ssh-cert-authorize
-      SSHCERT_AUTHORIZE: /usr/local/bin/sshcert-authorize
+      SSHCERT_GEANT_JUDGE: /opt/sshcert-judges/sshcert-geant-judge
+      SSHCERT_GEANT_AUTHORIZE: /opt/sshcert-judges/ssh-cert-authorize
+      SSHCERT_AUTHORIZE: /opt/sshcert-judges/sshcert-authorize
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
@@ -71,14 +71,17 @@ jobs:
           ssh -V
       - name: GÉANT's ssh-cert-tool, and this command, installed where sshd runs them
         # sshd runs an AuthorizedPrincipalsCommand only from a path owned by
-        # root and writable by no one else.
+        # root and writable by no one else, and on the runner /usr/local/bin
+        # is not (sshd: "bad ownership or modes for directory").
         run: |
           git clone -q https://gitlab.geant.org/core-aai-platform/ssh-cert-tool.git "$RUNNER_TEMP/geant"
           git -C "$RUNNER_TEMP/geant" checkout -q "$GEANT_COMMIT"
           testdata/geantjudge/build.sh "$RUNNER_TEMP/judges" "$RUNNER_TEMP/geant"
           go build -o "$RUNNER_TEMP/judges/sshcert-authorize" ./cmd/sshcert-authorize
+          sudo install -d -o root -g root -m 0755 /opt/sshcert-judges
+          ls -ld / /opt /opt/sshcert-judges
           for b in sshcert-geant-judge ssh-cert-authorize sshcert-authorize; do
-            sudo install -o root -g root -m 0755 "$RUNNER_TEMP/judges/$b" /usr/local/bin/$b
+            sudo install -o root -g root -m 0755 "$RUNNER_TEMP/judges/$b" /opt/sshcert-judges/$b
           done
       - name: differential tests against GÉANT's matcher and parser
         run: go test -count=1 -v -run 'GEANT' .
