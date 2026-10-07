@@ -68,12 +68,9 @@ makes it an independent judge.
 
 ### The extension's name
 
-The specification and GÉANT's tools spell it
-`ssh-domain-grant@core.aai.geant.org`, and certificates carry that name. A
-spelling `ssh-domain-grant@core.aai.org` was reported on the EuroHPC pages;
-as read on 2026-10-07, the authorisation page spells it
-`...@core.aai.geant.org` and the other two do not name it. This package uses
-the specification's name (`sshcert.DomainGrantExtension`); `--extension`
+The specification, GÉANT's tools and the EuroHPC authorisation page all spell
+it `ssh-domain-grant@core.aai.geant.org`, and certificates carry that name.
+This package exports it as `sshcert.DomainGrantExtension`; `--extension`
 names another one.
 
 ### Strict reading
