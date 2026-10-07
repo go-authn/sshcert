@@ -240,12 +240,29 @@ by this package; `ssh` logs in or not:
 
 The last four rows of GÉANT's column are the fail-open, demonstrated.
 
-## Coming next: go-authn/bridge
+## Who uses it
 
-[go-authn/bridge](https://github.com/go-authn/bridge) will issue such
-certificates: a short-lived Ed25519 user certificate for an authenticated
-user, its domain grant written with `SetDomainGrant`, so that it is read by
-GÉANT's tool, by `sshcert-authorize` and by `ssh-keygen` alike.
+- **Issuing: [go-authn/bridge](https://github.com/go-authn/bridge)
+  [v0.19.0](https://github.com/go-authn/bridge/tree/v0.19.0).** It is
+  an OpenID Connect provider in front of a SAML federation. A client
+  configured in the EuroHPC SSH CA profile gets short-lived user certificates
+  with one principal and a `source-address`, and its `ssh_domain_grants` are
+  written into this extension. bridge checks each pattern at load with
+  `ValidatePattern`, then encodes the list with `EncodeDomainGrant`.
+  `GET /ssh/config` publishes the CA key the way EFP publishes its own,
+  `{"PublicKey":"..."}`. The grant is then read alike by GÉANT's tool, by
+  `sshcert-authorize` and by `ssh-keygen`.
+- **Enforcing: [go-fileshare/fileshare](https://github.com/go-fileshare/fileshare)
+  [v0.22.1](https://github.com/go-fileshare/fileshare/releases/tag/v0.22.1).**
+  Its SFTP server has `ssh_domains`, which reads the grant with
+  `DomainGrant` and `Grants` and is fail-closed in the same way as
+  `sshcert-authorize`. It refuses a certificate with no grant unless
+  `ssh_accept_ungranted` is set, and it always refuses a malformed grant. A
+  certificate's `source-address` is enforced there too.
+  [go-authn/bridge#54](https://github.com/go-authn/bridge/pull/54) adds an
+  interop test that logs in to the released fileshare with an EFP-profile
+  certificate. It gets in where both the grant and the address allow it, and is
+  refused where either does not.
 
 ## License
 
