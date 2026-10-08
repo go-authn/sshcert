@@ -264,6 +264,20 @@ The last four rows of GÉANT's column are the fail-open, demonstrated.
   certificate. It gets in where both the grant and the address allow it, and is
   refused where either does not.
 
+## Release binaries
+
+Each release carries `sshcert-authorize` for linux, darwin and windows on amd64 and arm64
+(pure Go, `CGO_ENABLED=0`), a `SHA256SUMS` manifest, and a build provenance
+attestation per binary, made by this repository's release workflow at the
+tag. Check a download before running it:
+
+```sh
+sha256sum -c SHA256SUMS --ignore-missing
+gh attestation verify sshcert-authorize-linux-amd64 --repo go-authn/sshcert
+```
+
+`sshcert-authorize -version` prints the tag it was built from.
+
 ## License
 
 BSD-3-Clause.
