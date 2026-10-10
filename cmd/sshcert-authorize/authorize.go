@@ -12,6 +12,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -20,8 +21,38 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// version is set with -ldflags "-X main.version=...".
+// version is set with -ldflags "-X main.version=...", as the release workflow
+// does. Without it, the module version a `go install …@v0.1.4` records is used
+// (see buildVersion), so every way of installing it says what it is.
 var version = "dev"
+
+// buildVersion is what -version prints: the -ldflags value when one was given,
+// else the main module's version from the build info, else "dev". It printed
+// "dev" for every `go install` build, which authn-bridge and authn-revokd do
+// not: both read the build info.
+func buildVersion() string { return pickVersion(version, mainVersion()) }
+
+// readBuildInfo is debug.ReadBuildInfo, replaced by the tests: a binary built
+// without module support has none, and that branch needs a witness too.
+var readBuildInfo = debug.ReadBuildInfo
+
+func mainVersion() string {
+	if bi, ok := readBuildInfo(); ok {
+		return bi.Main.Version
+	}
+	return ""
+}
+
+// pickVersion is split out because a `go test` binary always says "(devel)".
+func pickVersion(ldflag, module string) string {
+	if ldflag != "dev" {
+		return ldflag
+	}
+	if module != "" && module != "(devel)" {
+		return module
+	}
+	return ldflag
+}
 
 // now is the clock, replaced by the tests.
 var now = time.Now
@@ -68,7 +99,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return 2
 	}
 	if *showVersion {
-		fmt.Fprintf(stdout, "sshcert-authorize %s\n", version)
+		fmt.Fprintf(stdout, "sshcert-authorize %s\n", buildVersion())
 		return 0
 	}
 	lg, err := newLogger(*useSyslog, *debug, stderr)

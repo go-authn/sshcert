@@ -10,6 +10,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 	"testing"
 	"time"
@@ -364,5 +365,38 @@ func TestKV(t *testing.T) {
 		if got := kv(in); got != want {
 			t.Errorf("kv(%q) = %s, want %s", in, got, want)
 		}
+	}
+}
+
+// -version says what was installed whichever way it was built: the release's
+// -ldflags value first, then the module version `go install …@v0.1.4`
+// records, and "dev" only when neither says anything.
+func TestVersionComesFromWhereverItIsRecorded(t *testing.T) {
+	for _, c := range []struct{ ldflag, module, want string }{
+		{"v0.1.4", "(devel)", "v0.1.4"}, // the release workflow
+		{"dev", "v0.1.5", "v0.1.5"},     // go install …@v0.1.5
+		{"dev", "(devel)", "dev"},       // a checkout build
+		{"dev", "", "dev"},              // no build info at all
+		{"v0.1.4", "v0.1.5", "v0.1.4"},  // an explicit stamp wins
+	} {
+		if got := pickVersion(c.ldflag, c.module); got != c.want {
+			t.Errorf("pickVersion(%q, %q) = %q, want %q", c.ldflag, c.module, got, c.want)
+		}
+	}
+}
+
+// With no build info at all, -version still answers, with "dev".
+func TestVersionWithoutBuildInfo(t *testing.T) {
+	orig := readBuildInfo
+	t.Cleanup(func() { readBuildInfo = orig })
+	readBuildInfo = func() (*debug.BuildInfo, bool) { return nil, false }
+	if got := mainVersion(); got != "" {
+		t.Errorf("mainVersion() = %q with no build info", got)
+	}
+	readBuildInfo = func() (*debug.BuildInfo, bool) {
+		return &debug.BuildInfo{Main: debug.Module{Version: "v0.1.5"}}, true
+	}
+	if got := buildVersion(); got != "v0.1.5" {
+		t.Errorf("buildVersion() = %q, want the module version", got)
 	}
 }
