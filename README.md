@@ -12,7 +12,7 @@ for GÉANT's `ssh-cert-authorize`. Pure Go, `CGO_ENABLED=0`.
 ```go
 // An issuer: a certificate for the hosts of one hosting entity.
 cert := &ssh.Certificate{ /* key, principal, validity... */ }
-err := sshcert.SetDomainGrant(cert, []string{"*.lumi.example.eu", "login.example.org"})
+err := sshcert.SetDomainGrant(cert, []string{"*.lumi.example.net", "login.example.org"})
 cert.SignCert(rand.Reader, ca)
 
 // A host: is this certificate meant for me?

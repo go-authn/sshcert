@@ -9,7 +9,7 @@
 // user's MyAccessID identifier, and in this extension the list of host
 // names, possibly with wildcards, it may be used on:
 //
-//	["*.lumi.example.eu","login.example.org"]
+//	["*.lumi.example.net","login.example.org"]
 //
 // A site trusting the CA then refuses, in sshd's AuthorizedPrincipalsCommand,
 // a certificate that was not granted for it. The command
