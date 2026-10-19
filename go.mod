@@ -3,7 +3,7 @@ module github.com/go-authn/sshcert
 go 1.27.1
 
 require (
-	github.com/go-authn/krl v0.6.0
+	github.com/go-authn/krl v0.6.1
 	golang.org/x/crypto v0.58.0
 )
 
