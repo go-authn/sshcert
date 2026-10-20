@@ -1,5 +1,5 @@
-github.com/go-authn/krl v0.6.0 h1:FgDNWur+4OuL97W5OIKoEb8y2Lu0owlCuUl0Y1ReWPo=
-github.com/go-authn/krl v0.6.0/go.mod h1:ovqI+9oaZxw/KTiZSyi2Lqdhmscbocc29oV2DoIh3l8=
+github.com/go-authn/krl v0.6.1 h1:m3DrENpuM3F8IjTFGxeVy0H6O0/wz3F45kCzIVI6PVA=
+github.com/go-authn/krl v0.6.1/go.mod h1:BfhDfQ7cQa+ls3SylzE/xbI/7Mu2AOXIJfeIw9XTbM0=
 golang.org/x/crypto v0.58.0 h1:COkYLr4k7nDI4r6QtMML2AfzeIswWHAJthLS6K/M/54=
 golang.org/x/crypto v0.58.0/go.mod h1:Xh+kl5A+M0gMiWDytH2Hhr5Z7WbNCpv/eB/EFgfSk+w=
 golang.org/x/sys v0.49.0 h1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA=
