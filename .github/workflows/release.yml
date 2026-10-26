@@ -72,7 +72,7 @@ jobs:
             out="sshcert-authorize-${os}-${arch}"; [ "$os" = windows ] && out="${out}.exe"
             echo "building $out"
             CGO_ENABLED=0 GOOS="$os" GOARCH="$arch" \
-              go build -trimpath -ldflags="-s -w -X main.version=${TAG}" -o "$dist/${out}" ./cmd/sshcert-authorize
+              go build -trimpath -ldflags="-w -X main.version=${TAG}" -o "$dist/${out}" ./cmd/sshcert-authorize
           done
           cd "$dist" && sha256sum sshcert-authorize-* > SHA256SUMS && cat SHA256SUMS
 
